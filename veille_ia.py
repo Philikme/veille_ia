@@ -52,4 +52,3 @@ https://www.lesechos.fr/rss/rss_tech.xml""")
 if __name__ == "__main__":
     main()
 
-// fin du programme
