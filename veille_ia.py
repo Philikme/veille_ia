@@ -1,19 +1,23 @@
 import streamlit as st
 import feedparser
 import pandas as pd
-from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
+import requests
 
-def classify_article(text, client):
-    messages = [
-        ChatMessage(role="system", content="Analyse si cet article est pertinent pour une veille IA. Réponds uniquement par 'Pertinent' ou 'Non pertinent'."),
-        ChatMessage(role="user", content=text)
-    ]
-    response = client.chat(
-        model="mistral-tiny",
-        messages=messages
-    )
-    return response.messages[0].content
+def classify_article(text, api_key):
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "model": "mistral-tiny",
+        "messages": [
+            {"role": "system", "content": "Analyse si cet article est pertinent pour une veille IA. Réponds uniquement par 'Pertinent' ou 'Non pertinent'."},
+            {"role": "user", "content": text}
+        ]
+    }
+    response = requests.post("https://api.mistral.ai/v1/chat/completions",
+                           headers=headers, json=data)
+    return response.json()['choices'][0]['message']['content']
 
 def main():
     st.title("Agent de Veille IA avec Mistral")
